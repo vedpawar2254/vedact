@@ -1,4 +1,11 @@
 export function render(vnode, container){
+
+    if (typeof type === 'function') {
+        const componentVNode = type(props);
+        render(componentVNode, container);
+        return;
+      }
+
     if (typeof vnode === 'string' || typeof vnode === 'number') {
         const textNode = document.createTextNode(vnode);
         container.appendChild(textNode);
