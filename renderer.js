@@ -1,10 +1,6 @@
 export function render(vnode, container){
 
-    if (typeof type === 'function') {
-        const componentVNode = type(props);
-        render(componentVNode, container);
-        return;
-      }
+    
 
     if (typeof vnode === 'string' || typeof vnode === 'number') {
         const textNode = document.createTextNode(vnode);
@@ -13,6 +9,13 @@ export function render(vnode, container){
     }
 
     const { type, props } = vnode;
+
+
+    if (typeof type === 'function') {
+        const componentVNode = type(props);
+        render(componentVNode, container);
+        return;
+      }
 
     const dom = document.createElement(type);
 
