@@ -1,5 +1,4 @@
-const REACT_ELEMENT_TYPE = Symbol.for('react.element');
-
+import { VEDS_ELEMENT } from './constants.js';
 export default function createElement(type, config, ...children) {
   
   let propName;
@@ -33,7 +32,7 @@ export default function createElement(type, config, ...children) {
 
   
   return {
-    $$typeof: REACT_ELEMENT_TYPE,
+    $$typeof: VEDS_ELEMENT,
     type: type,
     key: key,
     ref: ref,

@@ -1,10 +1,18 @@
 /** @jsx createElement */
-import createElement from '../createElement.js';
+import createElement from './createElement.js';
+import { render } from './renderer.js';
 
-const el = (
-<div>
-    <h1>hi</h1>
-</div>
-);
+function App() {
+  return (
+    <div vedName="container">
+      <h1>Hello JSX to VDOM</h1>
+      <button onvedsClick={() => alert("Ved clicked!")} className="btn">
+        Click Me
+      </button>
+    </div>
+  );
+}
 
-console.log(el);
+
+const vnode = <App />;
+render(vnode, document.getElementById('vedsapp'));
