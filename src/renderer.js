@@ -23,7 +23,7 @@ function patchProps(el, oldProps, newProps) {
       el.setAttribute(attr, newVal);
     }
   }
-}
+} 
 
 function patchChildren(parent, oldChildren, newChildren) {
   if (typeof newChildren === 'string' || typeof newChildren === 'number') {
