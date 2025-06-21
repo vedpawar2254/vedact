@@ -14,6 +14,7 @@ export default function createElement(type, config, ...children) {
     if (config.key !== undefined) {
       key = '' + config.key;
     }
+    
 
    
     for (propName in config) {
@@ -37,6 +38,7 @@ export default function createElement(type, config, ...children) {
     key: key,
     ref: ref,
     props: props,
+    ved: "sup bruv",
     _owner: null,
   };
 }
