@@ -39,5 +39,6 @@ export default function createElement(type, config, ...children) {
     props: props,
     ved: "sup bruv",
     _owner: null,
+    el: null
   };
 }

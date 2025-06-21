@@ -1,18 +1,28 @@
 /** @jsx createElement */
-import createElement from './createElement.js';
-import { render } from './renderer.js';
+import createElement from '../createElement.js';
+import { render, patch } from '../renderer.js';
 
-function App() {
+let count = 0; 
+let oldVNode;
+
+function App({ count }) {
   return (
     <div vedName="container">
-      <h1>Hello JSX to VDOM</h1>
-      <button onvedsClick={() => alert("Ved clicked!")} className="btn">
-        Click Me
+      <h1>Count: {count}</h1>
+      <button
+        onvedsClick={() => {
+          count++;
+          console.log(count);
+          const newVNode = <App count={count} />;
+          patch(oldVNode, newVNode, document.getElementById("vedsapp"));
+          oldVNode = newVNode;
+        }}
+      >
+        Increment
       </button>
     </div>
   );
 }
 
-
-const vnode = <App />;
-render(vnode, document.getElementById('vedsapp'));
+oldVNode = <App count={count}/>;
+render(oldVNode, document.getElementById('vedsapp'));
