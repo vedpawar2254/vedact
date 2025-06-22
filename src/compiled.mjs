@@ -8,20 +8,33 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 import createElement from './createElement.js';
 import { render } from './renderer.js';
 import { useState } from './hooks.js';
-export function App() {
-  var _useState = useState(0),
+export var App = function App() {
+  var _useState = useState('ved'),
     _useState2 = _slicedToArray(_useState, 2),
-    count = _useState2[0],
-    setCount = _useState2[1];
+    name = _useState2[0],
+    setName = _useState2[1];
+  var _useState3 = useState(0),
+    _useState4 = _slicedToArray(_useState3, 2),
+    count = _useState4[0],
+    setCount = _useState4[1];
   return createElement("div", {
-    className: "container"
-  }, createElement("h1", null, "Count: ", count), createElement("button", {
-    onClick: function onClick() {
-      console.log('Click! Current count:', count);
-      setCount(count + 1);
+    draggable: true
+  }, createElement("h2", null, "Hello ", name, "!"), createElement("p", null, "I am a pargraph"), createElement("input", {
+    type: "text",
+    value: name,
+    onchange: function onchange(e) {
+      return setName(e.target.value);
     }
-  }, "Increment"));
-}
+  }), createElement("h2", null, " Counter value: ", count), createElement("button", {
+    onclick: function onclick() {
+      return setCount(count + 1);
+    }
+  }, "+1"), createElement("button", {
+    onclick: function onclick() {
+      return setCount(count - 1);
+    }
+  }, "-1"));
+};
 var rootElement = document.getElementById('vedsapp');
 rootElement.innerHTML = '';
 render(createElement(App, null), rootElement);
