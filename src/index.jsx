@@ -9,7 +9,7 @@ export const App = () => {
   return (
     <div draggable>
       <h2>Hello {name}!</h2>
-      <p>I am a pargraph</p>
+      <p>I am a ved</p>
       <input
         type="text"
         value={name}
