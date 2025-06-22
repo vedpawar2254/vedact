@@ -7,7 +7,7 @@ export const App = () => {
   const [name, setName] = useState('ved');
   const [count, setCount] = useState(0);
   return (
-    <div draggable>
+    <div>
       <h2>Hello {name}!</h2>
       <p>I am a ved</p>
       <input
