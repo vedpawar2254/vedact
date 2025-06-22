@@ -1,5 +1,5 @@
 import { VEDS_ELEMENT, VEDS_TEXT } from './constants.js';
-import { createTextVNode } from './createTextVNode.js';
+import { prepareHooks } from './hooks.js';
 
 function isValidVedElement(obj) {
   return typeof obj === 'object' &&
@@ -9,9 +9,7 @@ function isValidVedElement(obj) {
 
 function patchProps(el, oldProps, newProps) {
   for (const key in oldProps) {
-    if (!(key in newProps)) {
-      el.removeAttribute(key);
-    }
+    if (!(key in newProps)) el.removeAttribute(key);
   }
 
   for (const key in newProps) {
@@ -30,7 +28,6 @@ function patchChildren(parent, oldChildren, newChildren) {
   if (!Array.isArray(newChildren)) newChildren = [newChildren].filter(Boolean);
 
   const length = Math.max(oldChildren.length, newChildren.length);
-
   for (let i = 0; i < length; i++) {
     const oldChild = oldChildren[i];
     const newChild = newChildren[i];
@@ -81,9 +78,12 @@ export function render(vnode, container) {
   const { type, props } = vnode;
 
   if (typeof type === 'function') {
-    const componentVNode = type(props || {});
-    const rendered = render(componentVNode, container);
-    vnode.el = componentVNode.el;
+    prepareHooks(vnode);
+    vnode._container = container;
+    const childVNode = type(props || {});
+    vnode._rendered = childVNode;
+    const rendered = render(childVNode, container);
+    vnode.el = childVNode.el;
     return rendered;
   }
 
@@ -105,7 +105,10 @@ export function render(vnode, container) {
 
   const children = props.children || [];
   children.forEach(child => {
-    if (child != null && child !== false) render(child, dom);
+    if (child != null && child !== false) {
+      const rendered = render(child, dom);
+      if (typeof child === 'object') child.el = rendered;
+    }
   });
 
   container.appendChild(dom);

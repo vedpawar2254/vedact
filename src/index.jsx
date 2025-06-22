@@ -1,28 +1,18 @@
 /** @jsx createElement */
-import createElement from '../createElement.js';
-import { render, patch } from '../renderer.js';
+import createElement from './createElement.js';
+import { render } from './renderer.js';
+import { useState } from './hooks.js';
 
-let count = 0; 
-let oldVNode;
+export function App() {
+  const [count, setCount] = useState(0);
 
-function App({ count }) {
   return (
     <div vedName="container">
       <h1>Count: {count}</h1>
-      <button
-        onvedsClick={() => {
-          count++;
-          console.log(count);
-          const newVNode = <App count={count} />;
-          patch(oldVNode, newVNode, document.getElementById("vedsapp"));
-          oldVNode = newVNode;
-        }}
-      >
-        Increment
-      </button>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
     </div>
   );
 }
 
-oldVNode = <App count={count}/>;
-render(oldVNode, document.getElementById('vedsapp'));
+const vnode = <App />;
+render(vnode, document.getElementById("vedsapp"));
