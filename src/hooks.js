@@ -1,9 +1,8 @@
-import { patch } from './renderer.js';
+import { patch } from "./renderer.js";
+const hookStateMap = new WeakMap();
 
 export let currentComponent = null;
 export let currentHookIndex = 0;
-
-const hookStateMap = new WeakMap(); 
 
 export function prepareHooks(componentVNode) {
   currentComponent = componentVNode;
@@ -21,16 +20,20 @@ export function useState(initialValue) {
     stateArray[index] = initialValue;
   }
 
-  function setState(newValue) {
-    stateArray[index] = newValue;
-    const parent = currentComponent._container;
-    const newVNode = currentComponent.type(currentComponent.props);
-    newVNode._container = parent;
-    patch(currentComponent._rendered, newVNode, parent);
-    currentComponent._rendered = newVNode;
-  }
+  const setState = ((i, component) => (newValue) => {
+    const states = hookStateMap.get(component);
+    if (states[i] !== newValue) {
+      states[i] = newValue;
+      const parent = component._container;
+      currentComponent = component;
+      currentHookIndex = 0;
+      const newVNode = component.type(component.props);
+      newVNode._container = parent;
+      patch(component._rendered, newVNode, parent);
+      component._rendered = newVNode;
+    }
+  })(index, currentComponent);
 
-  const value = stateArray[currentHookIndex];
   currentHookIndex++;
-  return [value, setState];
+  return [stateArray[index], setState];
 }

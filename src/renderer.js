@@ -7,53 +7,18 @@ function isValidVedElement(obj) {
     (obj.$$typeof === VEDS_ELEMENT || obj.$$typeof === VEDS_TEXT);
 }
 
-function patchProps(el, oldProps, newProps) {
-  for (const key in oldProps) {
-    if (!(key in newProps)) el.removeAttribute(key);
-  }
-
-  for (const key in newProps) {
-    if (key === 'children') continue;
-    const oldVal = oldProps[key];
-    const newVal = newProps[key];
-    if (oldVal !== newVal) {
-      const attr = (key === 'className' || key === 'vedName') ? 'class' : key;
-      el.setAttribute(attr, newVal);
-    }
-  }
-}
-
-function patchChildren(parent, oldChildren, newChildren) {
-  if (!Array.isArray(oldChildren)) oldChildren = [oldChildren].filter(Boolean);
-  if (!Array.isArray(newChildren)) newChildren = [newChildren].filter(Boolean);
-
-  const length = Math.max(oldChildren.length, newChildren.length);
-  for (let i = 0; i < length; i++) {
-    const oldChild = oldChildren[i];
-    const newChild = newChildren[i];
-
-    if (oldChild && newChild) {
-      patch(oldChild, newChild, parent);
-    } else if (newChild && !oldChild) {
-      render(newChild, parent);
-    } else if (oldChild && !newChild && oldChild.el) {
-      parent.removeChild(oldChild.el);
-    }
-  }
-}
-
 export function patch(oldVNode, newVNode, container) {
   if (!oldVNode) {
     render(newVNode, container);
   } else if (!newVNode) {
-    container.removeChild(oldVNode.el);
+    if (oldVNode.el) container.removeChild(oldVNode.el);
   } else if (oldVNode.$$typeof !== newVNode.$$typeof || oldVNode.type !== newVNode.type) {
     const newEl = render(newVNode, container);
-    container.replaceChild(newEl, oldVNode.el);
+    if (oldVNode.el) container.replaceChild(newEl, oldVNode.el);
   } else if (newVNode.$$typeof === VEDS_TEXT) {
     const el = newVNode.el = oldVNode.el;
     if (oldVNode.text !== newVNode.text) {
-      el.textContent = newVNode.text;
+      el.nodeValue = newVNode.text;
     }
   } else {
     const el = newVNode.el = oldVNode.el;
@@ -61,6 +26,67 @@ export function patch(oldVNode, newVNode, container) {
     patchChildren(el, oldVNode.props.children, newVNode.props.children);
   }
 }
+
+function patchProps(el, oldProps, newProps) {
+  const allProps = new Set([...Object.keys(oldProps || {}), ...Object.keys(newProps || {})]);
+  
+  for (const key of allProps) {
+    if (key === 'children') continue;
+    
+    const oldVal = oldProps?.[key];
+    const newVal = newProps?.[key];
+    
+    if (oldVal !== newVal) {
+      if (key.startsWith('on') && typeof newVal === 'function') {
+        const eventName = key.toLowerCase().substring(2);
+        if (oldVal) el.removeEventListener(eventName, oldVal);
+        el.addEventListener(eventName, newVal);
+      } else if (newVal == null || newVal === false) {
+        el.removeAttribute(key);
+      } else {
+        const attr = key === 'className' ? 'class' : key;
+        el.setAttribute(attr, newVal);
+      }
+    }
+  }
+}
+
+function patchChildren(parent, oldChildren, newChildren) {
+  oldChildren = Array.isArray(oldChildren) ? oldChildren : [oldChildren].filter(Boolean);
+  newChildren = Array.isArray(newChildren) ? newChildren : [newChildren].filter(Boolean);
+
+  const oldKeyMap = new Map();
+  oldChildren.forEach((child, index) => {
+    const key = child?.key ?? index;
+    oldKeyMap.set(key, child);
+  });
+
+  const newKeyMap = new Map();
+  newChildren.forEach((child, index) => {
+    const key = child?.key ?? index;
+    newKeyMap.set(key, child);
+  });
+
+  oldChildren.forEach(oldChild => {
+    const key = oldChild?.key ?? oldChildren.indexOf(oldChild);
+    if (!newKeyMap.has(key)) {
+      parent.removeChild(oldChild.el);
+    }
+  });
+
+  newChildren.forEach((newChild, newIndex) => {
+    const key = newChild?.key ?? newIndex;
+    const oldChild = oldKeyMap.get(key);
+    
+    if (oldChild) {
+      patch(oldChild, newChild, parent);
+    } else {
+      render(newChild, parent);
+    }
+  });
+}
+
+
 
 export function render(vnode, container) {
   if (!isValidVedElement(vnode)) {
@@ -112,5 +138,6 @@ export function render(vnode, container) {
   });
 
   container.appendChild(dom);
+  console.log('Rendering', { vnode });
   return dom;
 }

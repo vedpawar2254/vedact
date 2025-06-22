@@ -7,12 +7,17 @@ export function App() {
   const [count, setCount] = useState(0);
 
   return (
-    <div vedName="container">
+    <div className="container">
       <h1>Count: {count}</h1>
-      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <button onClick={() => {
+        console.log('Click! Current count:', count);
+        setCount(count + 1);
+      }}>Increment</button>
     </div>
   );
 }
 
-const vnode = <App />;
-render(vnode, document.getElementById("vedsapp"));
+
+const rootElement = document.getElementById('vedsapp');
+rootElement.innerHTML = ''; 
+render(<App />, rootElement);

@@ -14,12 +14,14 @@ export function App() {
     count = _useState2[0],
     setCount = _useState2[1];
   return createElement("div", {
-    vedName: "container"
+    className: "container"
   }, createElement("h1", null, "Count: ", count), createElement("button", {
     onClick: function onClick() {
-      return setCount(count + 1);
+      console.log('Click! Current count:', count);
+      setCount(count + 1);
     }
   }, "Increment"));
 }
-var vnode = createElement(App, null);
-render(vnode, document.getElementById("vedsapp"));
+var rootElement = document.getElementById('vedsapp');
+rootElement.innerHTML = '';
+render(createElement(App, null), rootElement);

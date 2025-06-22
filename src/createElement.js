@@ -1,8 +1,8 @@
 import { VEDS_ELEMENT } from './constants.js';
-import { normalizeChildren } from './normalizeChildren.js';
+import { createTextVNode } from './createTextVNode.js';
 
 export default function createElement(type, config, ...children) {
-  let props = {};
+  const props = {};
   let key = null;
   let ref = null;
 
@@ -17,7 +17,11 @@ export default function createElement(type, config, ...children) {
     }
   }
 
-  props.children = normalizeChildren(children);
+  props.children = children.flat().filter(child => 
+    child != null && child !== false && child !== ''
+  ).map(child => 
+    typeof child === 'object' ? child : createTextVNode(child)
+  );
 
   return {
     $$typeof: VEDS_ELEMENT,
@@ -25,7 +29,6 @@ export default function createElement(type, config, ...children) {
     key,
     ref,
     props,
-    ved: "sup bruv",
     _owner: null,
     el: null
   };
