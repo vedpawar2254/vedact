@@ -1,13 +1,13 @@
-import { VEDS_ELEMENT } from './constants.js';
+import { VEDS_ELEMENT, VEDS_TEXT } from './constants.js';
+import { createTextVNode } from './createTextVNode.js';
 
 function isValidVedElement(obj) {
   return typeof obj === 'object' &&
     obj !== null &&
-    obj.$$typeof === VEDS_ELEMENT;
+    (obj.$$typeof === VEDS_ELEMENT || obj.$$typeof === VEDS_TEXT);
 }
 
 function patchProps(el, oldProps, newProps) {
-  console.log(oldProps, newProps);
   for (const key in oldProps) {
     if (!(key in newProps)) {
       el.removeAttribute(key);
@@ -23,16 +23,11 @@ function patchProps(el, oldProps, newProps) {
       el.setAttribute(attr, newVal);
     }
   }
-} 
+}
 
 function patchChildren(parent, oldChildren, newChildren) {
-  if (typeof newChildren === 'string' || typeof newChildren === 'number') {
-    parent.textContent = newChildren;
-    return;
-  }
-
-  if (!Array.isArray(oldChildren)) oldChildren = [];
-  if (!Array.isArray(newChildren)) newChildren = [];
+  if (!Array.isArray(oldChildren)) oldChildren = [oldChildren].filter(Boolean);
+  if (!Array.isArray(newChildren)) newChildren = [newChildren].filter(Boolean);
 
   const length = Math.max(oldChildren.length, newChildren.length);
 
@@ -51,34 +46,36 @@ function patchChildren(parent, oldChildren, newChildren) {
 }
 
 export function patch(oldVNode, newVNode, container) {
-  if (oldVNode == null) {
+  if (!oldVNode) {
     render(newVNode, container);
-  } else if (newVNode == null) {
+  } else if (!newVNode) {
     container.removeChild(oldVNode.el);
-  } else if (oldVNode.type !== newVNode.type) {
+  } else if (oldVNode.$$typeof !== newVNode.$$typeof || oldVNode.type !== newVNode.type) {
     const newEl = render(newVNode, container);
     container.replaceChild(newEl, oldVNode.el);
+  } else if (newVNode.$$typeof === VEDS_TEXT) {
+    const el = newVNode.el = oldVNode.el;
+    if (oldVNode.text !== newVNode.text) {
+      el.textContent = newVNode.text;
+    }
   } else {
     const el = newVNode.el = oldVNode.el;
-    if (!el) {
-      console.error("Patch failed: el is null", { oldVNode, newVNode });
-      return;
-    }
     patchProps(el, oldVNode.props, newVNode.props);
     patchChildren(el, oldVNode.props.children, newVNode.props.children);
   }
 }
 
 export function render(vnode, container) {
-  if (typeof vnode === 'string' || typeof vnode === 'number') {
-    const textNode = document.createTextNode(vnode);
-    container.appendChild(textNode);
-    return textNode;
-  }
-
   if (!isValidVedElement(vnode)) {
     console.warn("Invalid VDOM node:", vnode);
     return;
+  }
+
+  if (vnode.$$typeof === VEDS_TEXT) {
+    const textNode = document.createTextNode(vnode.text);
+    vnode.el = textNode;
+    container.appendChild(textNode);
+    return textNode;
   }
 
   const { type, props } = vnode;
@@ -106,15 +103,10 @@ export function render(vnode, container) {
     }
   }
 
-  const children = props.children;
-
-  if (Array.isArray(children)) {
-    children.forEach(child => {
-      if (child != null && child !== false) render(child, dom);
-    });
-  } else if (children != null && children !== false) {
-    render(children, dom);
-  }
+  const children = props.children || [];
+  children.forEach(child => {
+    if (child != null && child !== false) render(child, dom);
+  });
 
   container.appendChild(dom);
   return dom;
