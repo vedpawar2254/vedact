@@ -1,10 +1,31 @@
 import { VEDS_ELEMENT, VEDS_TEXT } from './constants.js';
 import { prepareHooks } from './hooks.js';
+import {effectStore} from "./constants.js"
 
 function isValidVedElement(obj) {
   return typeof obj === 'object' &&
     obj !== null &&
     (obj.$$typeof === VEDS_ELEMENT || obj.$$typeof === VEDS_TEXT);
+}
+
+
+
+
+function runEffects(component) {
+  if (!effectStore.has(component)) return;
+  
+  const effects = effectStore.get(component);
+  for (const effect of effects) {
+    if (!effect) continue;
+    
+    // Clean up previous effect if exists
+    if (effect.cleanup) {
+      effect.cleanup();
+    }
+    
+    // Run the effect callback and store new cleanup
+    effect.cleanup = effect.callback();
+  }
 }
 
 export function patch(oldVNode, newVNode, container) {
@@ -22,8 +43,29 @@ export function patch(oldVNode, newVNode, container) {
     }
   } else {
     const el = newVNode.el = oldVNode.el;
-    patchProps(el, oldVNode.props, newVNode.props);
-    patchChildren(el, oldVNode.props.children, newVNode.props.children);
+    const oldProps = oldVNode.props || {};
+    const newProps = newVNode.props || {};
+    patchProps(el, oldProps, newProps);
+    patchChildren(el, oldProps.children, newProps.children);
+  }
+}
+
+function patchChildren(parent, oldChildren, newChildren) {
+  oldChildren = Array.isArray(oldChildren) ? oldChildren : (oldChildren ? [oldChildren] : []);
+  newChildren = Array.isArray(newChildren) ? newChildren : (newChildren ? [newChildren] : []);
+
+  const maxLength = Math.max(oldChildren.length, newChildren.length);
+  for (let i = 0; i < maxLength; i++) {
+    const oldChild = oldChildren[i];
+    const newChild = newChildren[i];
+
+    if (oldChild && newChild) {
+      patch(oldChild, newChild, parent);
+    } else if (newChild) {
+      render(newChild, parent);
+    } else if (oldChild && oldChild.el) {
+      parent.removeChild(oldChild.el);
+    }
   }
 }
 
@@ -51,42 +93,6 @@ function patchProps(el, oldProps, newProps) {
   }
 }
 
-function patchChildren(parent, oldChildren, newChildren) {
-  oldChildren = Array.isArray(oldChildren) ? oldChildren : [oldChildren].filter(Boolean);
-  newChildren = Array.isArray(newChildren) ? newChildren : [newChildren].filter(Boolean);
-
-  const oldKeyMap = new Map();
-  oldChildren.forEach((child, index) => {
-    const key = child?.key ?? index;
-    oldKeyMap.set(key, child);
-  });
-
-  const newKeyMap = new Map();
-  newChildren.forEach((child, index) => {
-    const key = child?.key ?? index;
-    newKeyMap.set(key, child);
-  });
-
-  oldChildren.forEach(oldChild => {
-    const key = oldChild?.key ?? oldChildren.indexOf(oldChild);
-    if (!newKeyMap.has(key)) {
-      parent.removeChild(oldChild.el);
-    }
-  });
-
-  newChildren.forEach((newChild, newIndex) => {
-    const key = newChild?.key ?? newIndex;
-    const oldChild = oldKeyMap.get(key);
-    
-    if (oldChild) {
-      patch(oldChild, newChild, parent);
-    } else {
-      render(newChild, parent);
-    }
-  });
-}
-
-
 
 export function render(vnode, container) {
   if (!isValidVedElement(vnode)) {
@@ -110,8 +116,28 @@ export function render(vnode, container) {
     vnode._rendered = childVNode;
     const rendered = render(childVNode, container);
     vnode.el = childVNode.el;
+    runEffects(vnode);
     return rendered;
   }
+  // if (typeof type === 'function') {
+  //   prepareHooks(vnode);
+  //   currentHookIndex = 0; // Reset the hook index
+    
+  //   const childVNode = type(props || {});
+  //   vnode._rendered = childVNode;
+  //   const rendered = render(childVNode, container);
+    
+  //   // Run effects immediately after render
+  //   if (effectStore.has(vnode)) {
+  //     const effects = effectStore.get(vnode);
+  //     effects.forEach(effect => {
+  //       if (effect?.cleanup) effect.cleanup();
+  //       effect.cleanup = callback();
+  //     });
+  //   }
+    
+  //   return rendered;
+  // }
 
   const dom = document.createElement(type);
   vnode.el = dom;

@@ -7,7 +7,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 /** @jsx createElement */
 import createElement from './createElement.js';
 import { render } from './renderer.js';
-import { useState } from './hooks.js';
+import { useState, useEffect } from './hooks.js';
 export var App = function App() {
   var _useState = useState('ved'),
     _useState2 = _slicedToArray(_useState, 2),
@@ -17,9 +17,22 @@ export var App = function App() {
     _useState4 = _slicedToArray(_useState3, 2),
     count = _useState4[0],
     setCount = _useState4[1];
-  return createElement("div", {
-    draggable: true
-  }, createElement("h2", null, "Hello ", name, "!"), createElement("p", null, "I am a pargraph"), createElement("input", {
+  useEffect(function () {
+    console.log('Component mounted!');
+    return function () {
+      return console.log('Component unmounted!');
+    };
+  }, []);
+  useEffect(function () {
+    console.log("Count changed to: ".concat(count));
+    return function () {
+      console.log("Cleaning up count: ".concat(count));
+    };
+  }, [count]);
+  useEffect(function () {
+    console.log('I run on every render');
+  });
+  return createElement("div", null, createElement("h2", null, "Hello ", name, "!"), createElement("p", null, "Sup!!"), createElement("input", {
     type: "text",
     value: name,
     onchange: function onchange(e) {
