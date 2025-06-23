@@ -11,7 +11,8 @@
     "keywords": [],
     "author": "ved",
     "license": "ISC",
-    "description": "",
+    "description": "react but my own",
+    "entry point":"index.jsx",
     "devDependencies": {
         "@babel/cli": "^7.27.2",
         "@babel/core": "^7.27.4",

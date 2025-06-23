@@ -29,10 +29,7 @@ export var App = function App() {
       console.log("Cleaning up count: ".concat(count));
     };
   }, [count]);
-  useEffect(function () {
-    console.log('I run on every render');
-  });
-  return createElement("div", null, createElement("h2", null, "Hello ", name, "!"), createElement("p", null, "Sup!!"), createElement("input", {
+  return createElement("div", null, createElement("h2", null, "Hello ", name, "!"), createElement("input", {
     type: "text",
     value: name,
     onchange: function onchange(e) {
