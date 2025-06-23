@@ -2,13 +2,13 @@
     "type": "module",
     "name": "vedact",
     "version": "1.0.0",
-    "main": "createElement.js",
+    "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "babel src/index.jsx --out-file src/compiled.mjs",
         "start": "npx serve src"
     },
-    "keywords": [],
+    "keywords": ["react","frontend library","vedact","write frontend","learning purposes"],
     "author": "ved",
     "license": "ISC",
     "description": "react but my own",
