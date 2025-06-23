@@ -1,5 +1,6 @@
 # vedact
  
+My own react, for learning purposes.
 
 run `npm i && npm run build && npm run start`
 
