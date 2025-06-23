@@ -2,7 +2,6 @@ import { patch } from "./renderer.js";
 import {effectStore} from "./constants.js"
 const hookStateMap = new WeakMap();
 
-
 export let currentComponent = null;
 export let currentHookIndex = 0;
 
@@ -17,8 +16,6 @@ function areDepsEqual(a, b) {
   return true;
 }
 
-
-
 export function prepareHooks(componentVNode) {
   currentComponent = componentVNode;
   currentHookIndex = 0;
@@ -26,8 +23,6 @@ export function prepareHooks(componentVNode) {
     hookStateMap.set(componentVNode, []);
   }
 }
-
-
 
 export function useState(initialValue) {
   const stateArray = hookStateMap.get(currentComponent);
@@ -68,19 +63,15 @@ export function useEffect(callback, deps) {
   const hasChanged = !oldEffect || !areDepsEqual(oldEffect.deps, deps);
   
   if (hasChanged) {
-    // Run cleanup first if exists
     if (oldEffect?.cleanup) {
       oldEffect.cleanup();
     }
     
-    // Store the callback AND potential cleanup
     const effect = {
-      callback,  // Store the callback function
+      callback,
       deps,
       cleanup: null
     };
-    
-    // Execute callback and store cleanup
     effect.cleanup = callback();
     effects[effectIndex] = effect;
   }
