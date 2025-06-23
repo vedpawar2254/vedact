@@ -1,18 +1,27 @@
 {
     "type": "module",
     "name": "vedact",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "babel src/index.jsx --out-file src/compiled.mjs",
         "start": "npx serve src"
     },
-    "keywords": ["react","frontend library","vedact","write frontend","learning purposes","newton","nst","newton school"],
+    "keywords": [
+        "react",
+        "frontend library",
+        "vedact",
+        "write frontend",
+        "learning purposes",
+        "newton",
+        "nst",
+        "newton school"
+    ],
     "author": "ved",
     "license": "MIT",
     "description": "react but my own",
-    "entry point":"index.jsx",
+    "entry point": "index.jsx",
     "devDependencies": {
         "@babel/cli": "^7.27.2",
         "@babel/core": "^7.27.4",
