@@ -8,7 +8,7 @@
         "build": "babel src/index.jsx --out-file src/compiled.mjs",
         "start": "npx serve src"
     },
-    "keywords": ["react","frontend library","vedact","write frontend","learning purposes"],
+    "keywords": ["react","frontend library","vedact","write frontend","learning purposes","newton","nst","newton school"],
     "author": "ved",
     "license": "ISC",
     "description": "react but my own",
