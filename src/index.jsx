@@ -22,7 +22,6 @@ export const App = () => {
   return (
     <div>
       <h2>Hello {name}!</h2>
-      <p>Sup!!</p>
       <input
         type="text"
         value={name}
