@@ -1,5 +1,5 @@
 import { VEDS_ELEMENT, VEDS_TEXT } from '../shared/constants.js';
-import { prepareHooks } from '../hooks/hooks.js';
+import { prepareHooks } from '../hooks/index.js';
 import {effectStore} from "../shared/constants.js"
 
 function isValidVedElement(obj) {

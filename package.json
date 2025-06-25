@@ -4,9 +4,10 @@
     "version": "1.0.1",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "babel src/index.jsx --out-file src/compiled.mjs",
-        "start": "npx serve src"
+    "clean": "rm -rf dist",
+    "build": "babel demo/main.jsx --out-file demo/main.mjs",
+    "start": "npm run build && npx serve demo",
+    "test": "echo \"No tests yet!\" && exit 0"
     },
     "keywords": [
         "react",
