@@ -1,4 +1,4 @@
-import { VEDS_ELEMENT } from './constants.js';
+import { VEDS_ELEMENT } from '../shared/constants.js';
 import { createTextVNode } from './createTextVNode.js';
 
 export default function createElement(type, config, ...children) {

@@ -1,6 +1,7 @@
-import { patch } from "./renderer.js";
-import {effectStore} from "./constants.js"
-const hookStateMap = new WeakMap();
+import { patch } from "../core/patch.js";
+import { effectStore } from "../shared/constants.js";
+
+export const hookStateMap = new WeakMap();
 
 export let currentComponent = null;
 export let currentHookIndex = 0;
@@ -9,7 +10,6 @@ function areDepsEqual(a, b) {
   if (a === b) return true;
   if (!a || !b) return false;
   if (a.length !== b.length) return false;
-  
   for (let i = 0; i < a.length; i++) {
     if (a[i] !== b[i]) return false;
   }
@@ -32,24 +32,21 @@ export function useState(initialValue) {
     stateArray[index] = initialValue;
   }
 
-  const setState = ((i, component) => (newValue) => {
-    const states = hookStateMap.get(component);
-    if (states[i] !== newValue) {
-      states[i] = newValue;
-      const parent = component._container;
-      currentComponent = component;
-      currentHookIndex = 0;
-      const newVNode = component.type(component.props);
+  const setState = (newValue) => {
+    const states = hookStateMap.get(currentComponent);
+    if (states[index] !== newValue) {
+      states[index] = newValue;
+      const parent = currentComponent._container;
+      const newVNode = currentComponent.type(currentComponent.props);
       newVNode._container = parent;
-      patch(component._rendered, newVNode, parent);
-      component._rendered = newVNode;
+      patch(currentComponent._rendered, newVNode, parent);
+      currentComponent._rendered = newVNode;
     }
-  })(index, currentComponent);
+  };
 
   currentHookIndex++;
   return [stateArray[index], setState];
 }
-
 
 export function useEffect(callback, deps) {
   const effectIndex = currentHookIndex;
@@ -57,24 +54,21 @@ export function useEffect(callback, deps) {
   if (!effectStore.has(currentComponent)) {
     effectStore.set(currentComponent, []);
   }
+
   const effects = effectStore.get(currentComponent);
-  
   const oldEffect = effects[effectIndex];
   const hasChanged = !oldEffect || !areDepsEqual(oldEffect.deps, deps);
-  
+
   if (hasChanged) {
     if (oldEffect?.cleanup) {
       oldEffect.cleanup();
     }
-    
-    const effect = {
+    effects[effectIndex] = {
       callback,
       deps,
-      cleanup: null
+      cleanup: callback(),
     };
-    effect.cleanup = callback();
-    effects[effectIndex] = effect;
   }
-  
+
   currentHookIndex++;
 }

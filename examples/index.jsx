@@ -1,7 +1,8 @@
 /** @jsx createElement */
-import createElement from './createElement.js';
-import { render } from './renderer.js';
-import { useState,useEffect } from './hooks.js';
+import createElement from './core/createElement.js';
+import { render } from './core/renderer.js';
+import { useState,useEffect } from './hooks/hooks.js';
+// import { Button } from './component/button.jsx';
 
 export const App = () => {
   const [name, setName] = useState('ved');

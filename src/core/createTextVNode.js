@@ -1,4 +1,4 @@
-import { VEDS_TEXT } from './constants.js';
+import { VEDS_TEXT } from '../shared/constants.js';
 
 export function createTextVNode(text) {
     return {

@@ -1,6 +1,6 @@
-import { VEDS_ELEMENT, VEDS_TEXT } from './constants.js';
-import { prepareHooks } from './hooks.js';
-import {effectStore} from "./constants.js"
+import { VEDS_ELEMENT, VEDS_TEXT } from '../shared/constants.js';
+import { prepareHooks } from '../hooks/hooks.js';
+import {effectStore} from "../shared/constants.js"
 
 function isValidVedElement(obj) {
   return typeof obj === 'object' &&
@@ -9,21 +9,15 @@ function isValidVedElement(obj) {
 }
 
 
-
-
 function runEffects(component) {
   if (!effectStore.has(component)) return;
   
   const effects = effectStore.get(component);
   for (const effect of effects) {
     if (!effect) continue;
-    
-    // Clean up previous effect if exists
     if (effect.cleanup) {
       effect.cleanup();
     }
-    
-    // Run the effect callback and store new cleanup
     effect.cleanup = effect.callback();
   }
 }
