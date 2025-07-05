@@ -15,25 +15,30 @@ function areDepsEqual(a, b) {
 export function prepareHooks(componentVNode) {
   currentComponent = componentVNode;
   currentHookIndex = 0;
-  if (!hookStateMap.has(componentVNode)) {
-    hookStateMap.set(componentVNode, []);
+  if (!componentVNode.hookState) {
+    componentVNode.hookState = [];
   }
 }
 export function useState(initialValue) {
-  var stateArray = hookStateMap.get(currentComponent);
+  var stateArray = currentComponent.hookState;
   var index = currentHookIndex;
   if (stateArray[index] === undefined) {
     stateArray[index] = initialValue;
   }
   var setState = function setState(newValue) {
-    var states = hookStateMap.get(currentComponent);
-    if (states[index] !== newValue) {
-      states[index] = newValue;
+    var states = currentComponent.hookState;
+    var resolvedValue = typeof newValue === 'function' ? newValue(states[index]) : newValue;
+    if (states[index] !== resolvedValue) {
+      states[index] = resolvedValue;
+      var oldVNode = currentComponent._rendered;
       var parent = currentComponent._container;
       var newVNode = currentComponent.type(currentComponent.props);
       newVNode._container = parent;
-      patch(currentComponent._rendered, newVNode, parent);
+      newVNode.hookState = currentComponent.hookState;
+      prepareHooks(newVNode);
+      patch(oldVNode, newVNode, parent);
       currentComponent._rendered = newVNode;
+      console.log("setState called, newVNode:", newVNode);
     }
   };
   currentHookIndex++;
