@@ -1,0 +1,13 @@
+{
+    "name": "vedact-demo",
+    "type": "module",
+    "scripts": {
+      "dev": "vite"
+    },
+    "dependencies": {
+      "vedact": "file:../vedact"
+    },
+    "devDependencies": {
+      "vite": "^5.0.0"
+    }
+  }
