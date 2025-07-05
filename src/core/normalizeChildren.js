@@ -1,4 +1,4 @@
-import { createTextVNode } from './core/createTextVNode.js';
+import { createTextVNode } from './createTextVNode.js';
 
 export function normalizeChildren(children) {
   return children.map(child => {
