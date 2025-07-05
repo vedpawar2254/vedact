@@ -171,27 +171,6 @@ Optionally add a `ROADMAP.md`:
 * [ ] Implement `Fragment`
 * [ ] Add `createRoot` and concurrent rendering
 
----
-
-## 📌 **Ready-to-go README.md Example**
-
-Here’s a **realistic minimal README** for your repo:
-
-````md
-# 🧩 VedAct
-
-VedAct is a tiny React-like virtual DOM library with hooks.  
-**Build, render, and experiment with your own React internals!**
-
----
-
-## 📦 Install
-
-```bash
-npm install vedact
-````
-
----
 
 ## ⚛️ Quick Example
 
@@ -242,7 +221,6 @@ src/
   hooks/      # useState, useEffect
   shared/     # constants & symbols
   index.js    # Entry point
-examples/     # Example apps
 ```
 
 ---
@@ -263,12 +241,6 @@ Contributions welcome!
 
 And that’s it — you have your own React clone, **properly structured, documented, and publishable**.
 
----
-
-## 🔥 Next:  
-When you’ve drafted your README + structure, paste it here — I’ll review it like a senior dev would.  
-Ready?
-```
 
 
-great thanks to [this article](https://geekpaul.medium.com/lets-build-a-react-from-scratch-part-2-state-management-and-react-hooks-e771c5c06066)
+# great thanks to [this article](https://geekpaul.medium.com/lets-build-a-react-from-scratch-part-2-state-management-and-react-hooks-e771c5c06066)
